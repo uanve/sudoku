@@ -1,9 +1,10 @@
 import tkinter as tk
 from random import randint
 from PIL import Image, ImageTk
-from initial_solution import csv_to_list
+from initial_solution import *
 
 num_size = 70
+GAME_SPEED = 1000
 
 class Sudoku(tk.Canvas):
     def __init__(self):
@@ -11,7 +12,7 @@ class Sudoku(tk.Canvas):
             width=9*num_size, height=9*num_size, background="white", highlightthickness=0
         )
 
-        self.grid = csv_to_list()
+        self.grid = csv_to_list() #dictionary with current values
         self.create_grid()
         self.create_game()
         
@@ -23,7 +24,7 @@ class Sudoku(tk.Canvas):
 
         self.pack()
 
-        
+        self.after(GAME_SPEED, self.backtracking)
 
     def create_grid(self):
         self.create_rectangle(0, 0, 9*num_size, 9*num_size, outline="#525d69")
@@ -59,12 +60,8 @@ class Sudoku(tk.Canvas):
 
     def click(self,event):
 
-        try:
-            self.delete('click_rectangle')
-        except:
-            pass
+        self.delete('click_rectangle')
         
-
         self.position = (event.x//num_size, event.y//num_size)
         X,Y = self.position
         x,y = X*num_size, Y*num_size
@@ -77,12 +74,38 @@ class Sudoku(tk.Canvas):
         
         X,Y = self.position
         self.create_text((X+0.5)*num_size,(Y+0.5)*num_size,text=numb, fill='gray',tag='{}_{}'.format(X,Y)) 
+        self.grid[(X,Y)] = numb
+
 
     def delete_cell(self,event):
         X,Y = self.position
-        print("trying to delete {}-{}".format(X,Y))
-        
+               
         self.delete('{}_{}'.format(X,Y))
+        self.grid[(X,Y)] = 0
+
+        
+
+    def backtracking(self):
+        #first line
+        j = 0
+        new_line,is_added = line(0,self.grid.copy())
+        print(new_line)
+        grid_ = self.grid.copy()
+        print(grid_[(0,0)])
+        for i in range(9):
+            grid_[(i,j)] = new_line[i]
+            if is_added[i]:
+                X = i
+                Y = j
+                self.create_text((X+0.5)*num_size,(Y+0.5)*num_size,text=grid_[(i,j)], fill='red')
+        
+        self.after(GAME_SPEED, self.backtracking)
+        
+
+        
+        
+
+
 
 
 root = tk.Tk()
