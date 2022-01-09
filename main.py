@@ -51,10 +51,10 @@ class Sudoku(tk.Canvas):
 
     def create_game(self):
         grid = self.grid
-        for key in grid.keys():
-            i,j = key
-            if grid[key] != 0:
-                self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid[key]))    
+        for i in range(9):
+            for j in range(9):
+                if grid[i][j] != 0:
+                    self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid[i][j]))    
                 
     
 
@@ -91,15 +91,14 @@ class Sudoku(tk.Canvas):
         new_line,is_added = line(0,self.grid.copy())
         print(new_line)
         grid_ = self.grid.copy()
-        print(grid_[(0,0)])
+        print(grid_[0][0])
         for i in range(9):
-            grid_[(i,j)] = new_line[i]
+            grid_[i][j] = new_line[i]
             if is_added[i]:
-                X = i
-                Y = j
-                self.create_text((X+0.5)*num_size,(Y+0.5)*num_size,text=grid_[(i,j)], fill='red')
+                self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid_[i][j]), fill='red')
+                
         
-        self.after(GAME_SPEED, self.backtracking)
+        # self.after(GAME_SPEED, self.backtracking)
         
 
         
