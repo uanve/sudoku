@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 from initial_solution import *
 
 num_size = 70
-GAME_SPEED = 1000
+GAME_SPEED = 20
 
 class Sudoku(tk.Canvas):
     def __init__(self):
@@ -15,12 +15,14 @@ class Sudoku(tk.Canvas):
         self.grid = csv_to_list() #dictionary with current values
         self.create_grid()
         self.create_game()
+        self.initial_grid = csv_to_list()
         
         self.position = (0,0)
 
         self.bind("<Button-1>", self.click)
         self.bind_all("<Key>", self.key_press)
         self.bind('<Button-3>', self.delete_cell)
+        self.current_trial = (0,0)
 
         self.pack()
 
@@ -70,35 +72,86 @@ class Sudoku(tk.Canvas):
         
 
     def key_press(self,event):
-        numb = event.char
+        numb = int(event.char)
         
         X,Y = self.position
         self.create_text((X+0.5)*num_size,(Y+0.5)*num_size,text=numb, fill='gray',tag='{}_{}'.format(X,Y)) 
-        self.grid[(X,Y)] = numb
+        self.grid[X][Y] = numb
+        print("(X,Y) added: correct =",is_correct(self.grid))
+        
 
 
     def delete_cell(self,event):
         X,Y = self.position
                
         self.delete('{}_{}'.format(X,Y))
-        self.grid[(X,Y)] = 0
+        self.grid[X][Y] = 0
+        
+
+    def delete_row(self):
+        j = self.current_row
+        for i in range(9):
+            if self.initial_grid[i][j]==0:
+                self.delete('{}_{}'.format(i,j))
+                self.grid[i][j] = 0
+
+    def delete_all(self):
+        for j in range(9):
+            for i in range(9):
+                if self.initial_grid[i][j]==0:
+                    self.delete('{}_{}'.format(i,j))
+                    self.grid[i][j] = 0
+
+    def add_row(self):
+        j = self.current_row
+        grid = self.grid
+        new_line,is_added = line(j,grid.copy())
+               
+        for i in range(9):
+            grid[i][j] = new_line[i]
+            if is_added[i]:
+                self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid[i][j]), fill='red', tag='{}_{}'.format(i,j))
+
+
+    def new_trial(self):
+        i,j = self.current_trial[:]
+        while self.grid[i][j] != 0:
+            i += 1
+            if i>=9:
+                i = 0
+                j += 1
+        
+        self.current_trial = (i,j)
+
+        new_numb = new_number(i,j,self.grid)
+        self.grid[i][j] = new_numb
+        print(self.grid[i][j])
+        self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(self.grid[i][j]), fill='red', tag='{}_{}'.format(i,j))
+
 
         
+       
+
 
     def backtracking(self):
-        #first line
-        j = 0
-        new_line,is_added = line(0,self.grid.copy())
-        print(new_line)
-        grid_ = self.grid.copy()
-        print(grid_[0][0])
-        for i in range(9):
-            grid_[i][j] = new_line[i]
-            if is_added[i]:
-                self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid_[i][j]), fill='red')
-                
         
-        # self.after(GAME_SPEED, self.backtracking)
+        I,J = self.current_trial
+        self.new_trial()
+        
+
+
+        if self.grid[I][J] == -1:
+            self.delete_all()
+            self.current_trial = (0,0)
+        
+        # if (I,J) == ()
+        
+            
+
+        
+        
+        
+        self.after(GAME_SPEED, self.backtracking)
         
 
         

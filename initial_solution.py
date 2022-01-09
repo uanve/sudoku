@@ -8,7 +8,6 @@ def csv_to_list():
         l+=e
 
     f.close()
-    print(l)
     idx = 0
     grid = []
     for i in range(9):
@@ -27,35 +26,32 @@ def next_numb(numb_included):
 
     return numb
 
-def line(n,grid):
-    j = n
-    is_new = [grid[i][j] == 0 for i in range(9)]
-    numb_included  = [grid[i][j] for i in range(9) if grid[i][j]>0]
+def new_number(I,J,grid):
+    
+    numb_included  = [grid[i][J] for i in range(9) if grid[i][J]>0]
+    numb_included+= [grid[I][j] for j in range(9) if grid[I][j]>0] 
+    print(numb_included)
 
-    for i in range(9):
-        if is_new[i]:
-            grid[i][j] = next_numb(numb_included)
-            numb_included.append(grid[i][j])
-    return ([grid[i][j] for i in range(9)], is_new)
+    if len(set(numb_included))==9:
+        return -1
+    return next_numb(numb_included)
+
+
 
 
 
 
 def is_correct(grid):
-    n_current_solution = 0
-    
     for j in range(9):
         l = [grid[i][j] for i in range(9) if grid[i][j]!=0]
         if len(l) != len(set(l)):
-            return False,0
-        n_current_solution+=len(set(l))
+            return False
         
     for i in range(9):
         l = [grid[i][j] for j in range(9) if grid[i][j]!=0]
         if len(l) != len(set(l)):
-            return False,0
-        n_current_solution+=len(set(l))
-    return (True,n_current_solution)
+            return False
+    return True
 
         
     
