@@ -4,12 +4,14 @@ from PIL import Image, ImageTk
 from initial_solution import *
 
 num_size = 70
-GAME_SPEED = 20
+GAME_SPEED = 1
+
+f = open("C:/Users/joanv/OneDrive/Escritorio/code/sudoku/results.txt",'w')
 
 class Sudoku(tk.Canvas):
     def __init__(self):
         super().__init__(
-            width=9*num_size, height=9*num_size, background="white", highlightthickness=0
+            width=9*num_size, height=11*num_size, background="white", highlightthickness=0
         )
 
         self.grid = csv_to_list() #dictionary with current values
@@ -26,7 +28,7 @@ class Sudoku(tk.Canvas):
 
         self.pack()
 
-        self.after(GAME_SPEED, self.backtracking)
+        # self.after(GAME_SPEED, self.backtracking)
 
     def create_grid(self):
         self.create_rectangle(0, 0, 9*num_size, 9*num_size, outline="#525d69")
@@ -56,28 +58,60 @@ class Sudoku(tk.Canvas):
         for i in range(9):
             for j in range(9):
                 if grid[i][j] != 0:
-                    self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid[i][j]))    
+                    self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid[i][j]))
+        for i in range(9):
+            self.create_text((i+0.5)*num_size,(10+0.5)*num_size,text=str(i+1))
                 
     
 
     def click(self,event):
 
-        self.delete('click_rectangle')
-        
-        self.position = (event.x//num_size, event.y//num_size)
-        X,Y = self.position
-        x,y = X*num_size, Y*num_size
+        click_coordenates = (event.x//num_size, event.y//num_size)
+        if click_coordenates[1]<9:
+            self.delete('click_rectangle')
+            
+            self.position = click_coordenates
+            X,Y = self.position
+            x,y = X*num_size, Y*num_size
 
+            self.create_rectangle(x,y,x+num_size,y+num_size,outline='red',tag='click_rectangle')
+        elif click_coordenates[1]==10:
+            self.delete('mark_numbers')
+            numb_clicked = click_coordenates[0]+1
+            for i in range(9):
+                for j in range(9):
+                    if self.grid[i][j] == numb_clicked:
+                        x,y = i*num_size, j*num_size
+                        self.create_rectangle(x+10,y+10,x+num_size-10,y+num_size-10,outline='blue',tag='mark_numbers')
+
+                
+    def move_square(self,move):
+        self.delete('click_rectangle')
+        X,Y = self.position
+        if move=='Down':
+            Y+=1
+        elif move=='Up':
+            Y-=1
+        elif move=='Right':
+            X+=1
+        elif move=='Left':
+            X-=1
+        self.position = (X,Y)
+        x,y = X*num_size, Y*num_size
         self.create_rectangle(x,y,x+num_size,y+num_size,outline='red',tag='click_rectangle')
-        
+
 
     def key_press(self,event):
-        numb = int(event.char)
+        if event.keysym in ['Up','Down','Right','Left']:
+            self.move_square(event.keysym)
         
-        X,Y = self.position
-        self.create_text((X+0.5)*num_size,(Y+0.5)*num_size,text=numb, fill='gray',tag='{}_{}'.format(X,Y)) 
-        self.grid[X][Y] = numb
-        print("(X,Y) added: correct =",is_correct(self.grid))
+        else:
+            numb = int(event.char)
+        
+            X,Y = self.position
+            self.create_text((X+0.5)*num_size,(Y+0.5)*num_size,text=numb, fill='gray',tag='{}_{}'.format(X,Y)) 
+            self.grid[X][Y] = numb
+            print("({},{}) added: correct =".format(X,Y),is_correct(self.grid))
         
 
 
@@ -88,29 +122,12 @@ class Sudoku(tk.Canvas):
         self.grid[X][Y] = 0
         
 
-    def delete_row(self):
-        j = self.current_row
-        for i in range(9):
-            if self.initial_grid[i][j]==0:
-                self.delete('{}_{}'.format(i,j))
-                self.grid[i][j] = 0
-
     def delete_all(self):
         for j in range(9):
             for i in range(9):
                 if self.initial_grid[i][j]==0:
                     self.delete('{}_{}'.format(i,j))
                     self.grid[i][j] = 0
-
-    def add_row(self):
-        j = self.current_row
-        grid = self.grid
-        new_line,is_added = line(j,grid.copy())
-               
-        for i in range(9):
-            grid[i][j] = new_line[i]
-            if is_added[i]:
-                self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid[i][j]), fill='red', tag='{}_{}'.format(i,j))
 
 
     def new_trial(self):
@@ -125,41 +142,28 @@ class Sudoku(tk.Canvas):
 
         new_numb = new_number(i,j,self.grid)
         self.grid[i][j] = new_numb
-        print(self.grid[i][j])
+        # print(self.grid[i][j])
         self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(self.grid[i][j]), fill='red', tag='{}_{}'.format(i,j))
 
 
         
-       
-
-
     def backtracking(self):
         
         I,J = self.current_trial
         self.new_trial()
         
-
-
         if self.grid[I][J] == -1:
+            for i in range(9):
+                for j in range(9):
+                    f.write(str(self.grid[i][j])+" ")
+            f.write("\n")
             self.delete_all()
             self.current_trial = (0,0)
         
-        # if (I,J) == ()
-        
-            
-
-        
-        
-        
+        # if sum([sum(self.grid[i]) for i in range(9)])<405:
         self.after(GAME_SPEED, self.backtracking)
         
-
-        
-        
-
-
-
-
+            
 root = tk.Tk()
 root.title("Sudoku")
 root.resizable(False, False)

@@ -26,19 +26,21 @@ def next_numb(numb_included):
 
     return numb
 
+
 def new_number(I,J,grid):
     
     numb_included  = [grid[i][J] for i in range(9) if grid[i][J]>0]
-    numb_included+= [grid[I][j] for j in range(9) if grid[I][j]>0] 
-    print(numb_included)
+    numb_included+= [grid[I][j] for j in range(9) if grid[I][j]>0]
+    for i in range(I//3*3,I//3*3+3):
+        for j in range(J//3*3,J//3*3+3):
+            if grid[i][j]!=0:
+                numb_included.append(grid[i][j])
 
-    if len(set(numb_included))==9:
+    # print(numb_included)
+
+    if len(set(numb_included))>=9:
         return -1
-    return next_numb(numb_included)
-
-
-
-
+    return next_numb(set(numb_included))
 
 
 def is_correct(grid):
