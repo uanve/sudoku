@@ -24,6 +24,7 @@ class Sudoku(tk.Canvas):
         self.bind("<Button-1>", self.click)
         self.bind_all("<Key>", self.key_press)
         self.bind('<Button-3>', self.delete_cell)
+        self.hint_state = (False,1) #False: hints disable; #1
         self.current_trial = (0,0)
 
         self.pack()
@@ -61,6 +62,35 @@ class Sudoku(tk.Canvas):
                     self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid[i][j]))
         for i in range(9):
             self.create_text((i+0.5)*num_size,(10+0.5)*num_size,text=str(i+1))
+
+       
+        image = Image.open("assets/hint.png")
+        image = image.resize((45, 40), Image.ANTIALIAS)
+        self.reset_img = ImageTk.PhotoImage(image)
+        self.button = tk.Button(image=self.reset_img, command=self.give_hint)
+        self.button.place(x=1.15*num_size,y=9.2*num_size)
+     
+    
+    def give_hint(self,numb=0):
+        if numb!=0:
+            self.hint_state = (self.hint_state[0], numb)
+        else:
+            self.hint_state = (not self.hint_state[0], numb)
+
+        if self.hint_state[0]:
+            print("give gint for number {}".format(numb))
+            for square in range(9):
+                for i,j,candidate in possible_numbers_square(square,self.grid):
+                    if numb==candidate:
+                        print(i,j)
+                        self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(numb),tag='hint',fill='red')
+                        self.grid[i][j] = numb
+
+
+
+            
+
+            
                 
     
 
@@ -74,15 +104,20 @@ class Sudoku(tk.Canvas):
             X,Y = self.position
             x,y = X*num_size, Y*num_size
 
-            self.create_rectangle(x,y,x+num_size,y+num_size,outline='red',tag='click_rectangle')
+            self.create_rectangle(x+5,y+5,x+num_size-5,y+num_size-5,outline='red',tag='click_rectangle')
         elif click_coordenates[1]==10:
             self.delete('mark_numbers')
-            numb_clicked = click_coordenates[0]+1
+            i = click_coordenates[0]
+            numb_clicked = i + 1
+            self.give_hint(numb_clicked)
+            x,y = i*num_size, 10*num_size
+            self.create_rectangle(x+5,y+5,x+num_size-5,y+num_size-5,outline='blue',tag='mark_numbers')
             for i in range(9):
                 for j in range(9):
                     if self.grid[i][j] == numb_clicked:
                         x,y = i*num_size, j*num_size
-                        self.create_rectangle(x+10,y+10,x+num_size-10,y+num_size-10,outline='blue',tag='mark_numbers')
+                        self.create_rectangle(x+5,y+5,x+num_size-5,y+num_size-5,outline='blue',tag='mark_numbers')
+            
 
                 
     def move_square(self,move):
