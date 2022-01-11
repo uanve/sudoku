@@ -13,10 +13,8 @@
 
 
 ## Execute
-#### 1. 
-``` python main.py --file filename ```   filename included in the command (i.e. python main.py --file "sudoku_1.txt")
-#### 2. file chosen using GUI (pop up screen)
-``` python main.py ```
+``` python main.py --file filename ```:   filename included in the command (i.e. python main.py --file "sudoku_1.txt")
+``` python main.py ```:    file chosen using GUI (pop up screen)
 
 
 ## Create template
