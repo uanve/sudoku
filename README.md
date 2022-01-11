@@ -13,11 +13,12 @@
 
 
 ## Execute
-#### 1.filename included in the command (i.e. python main.py --file "sudoku_1.txt"): 
+#### 1. template(txt file) included in the command (i.e. python main.py --file "sudoku_1.txt"): 
 ``` python main.py --file filename ```
-#### 2.file chosen using GUI (pop up screen):
+#### 2. template(txt file) chosen using GUI (pop up screen):
 ``` python main.py ```
 
 
 ## Create template
 ``` python input_sudoku.py ```
+#### This app can be used to input a sudoku template. It then stores the generated template in a text file
