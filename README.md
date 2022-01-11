@@ -9,7 +9,7 @@
 - Delete specific cell using right-click
 - Highlight a chosen number in the grid
 - Give hints possible solution
-- Solve using backtracking
+- Automatically solve using backtracking
 
 
 ## Execute
