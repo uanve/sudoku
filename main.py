@@ -18,7 +18,6 @@ else:
     file = file_name()
     root.destroy()    
 
-f = open("C:/Users/joanv/OneDrive/Escritorio/code/sudoku/results.txt",'w')
 
 class Sudoku(tk.Canvas):
     def __init__(self):
@@ -43,7 +42,7 @@ class Sudoku(tk.Canvas):
 
         self.pack()
 
-        # self.after(GAME_SPEED, self.backtracking)
+        self.after(GAME_SPEED, self.backtracking)
 
     def create_grid(self):
         self.create_rectangle(0, 0, 9*num_size, 9*num_size, outline="#525d69")
@@ -210,10 +209,10 @@ class Sudoku(tk.Canvas):
         self.new_trial()
         
         if self.grid[I][J] == -1:
-            for i in range(9):
-                for j in range(9):
-                    f.write(str(self.grid[i][j])+" ")
-            f.write("\n")
+            # for i in range(9):
+            #     for j in range(9):
+            #         f.write(str(self.grid[i][j])+" ")
+            # f.write("\n")
             self.delete_all()
             self.current_trial = (0,0)
         
