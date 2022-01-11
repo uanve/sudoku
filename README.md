@@ -3,17 +3,19 @@
 
 
 ## Sudoku functionalities
-- Navigate through sudoku using keyboard arrows
+- Select specifil cell using left-click
+- Navigate through cells using keyboard arrows
+- Input number in selected cell
+- Delete specific cell using right-click
 - Highlight a chosen number in the grid
 - Give hints possible solution
 - Solve using backtracking
 
 
-## Execute (A)
-#### filename included in the command (i.e. python main.py --file "sudoku_1.txt"
+## Execute
+#### 1. filename included in the command (i.e. python main.py --file "sudoku_1.txt"
 ``` python main.py --file filename ```
-## Execute (B)
-#### file chosen using GUI
+#### 2. file chosen using GUI
 ``` python main.py ```
 
 
