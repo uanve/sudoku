@@ -13,9 +13,9 @@
 
 
 ## Execute
-#### 1. filename included in the command (i.e. python main.py --file "sudoku_1.txt"
+#### 1. filename included in the command (i.e. python main.py --file "sudoku_1.txt")
 ``` python main.py --file filename ```
-#### 2. file chosen using GUI
+#### 2. file chosen using GUI (pop up screen)
 ``` python main.py ```
 
 
