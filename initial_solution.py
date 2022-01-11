@@ -1,5 +1,8 @@
-def csv_to_list():
-    f = open("initial_solution.txt", "r")
+from os import walk
+
+def csv_to_list(file_name):
+    
+    f = open(file_name, "r")
     l = []
 
     for e in f:
@@ -9,11 +12,10 @@ def csv_to_list():
 
     f.close()
     idx = 0
-    grid = []
-    for i in range(9):
-        grid.append([])
-        for j in range(9):
-            grid[i].append(int(l[idx]))
+    grid = [[0 for i in range(9)] for i in range(9)]
+    for j in range(9):
+        for i in range(9):
+            grid[i][j]=int(l[idx])
             idx+=1
 
     return grid

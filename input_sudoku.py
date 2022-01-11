@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter.filedialog import askopenfilename as file_name
+from tkinter.filedialog import asksaveasfile as save_as
 from random import randint
 from PIL import Image, ImageTk
 from initial_solution import *
@@ -8,30 +8,16 @@ num_size = 70
 GAME_SPEED = 1
 
 
-import sys
-
-if("--file" in  sys.argv):
-    file = "./assets/sudokus/"+sys.argv[sys.argv.index("--file") + 1]
-else:
-    root = tk.Tk()
-    root.withdraw()
-    file = file_name()
-    root.destroy()    
-
-f = open("C:/Users/joanv/OneDrive/Escritorio/code/sudoku/results.txt",'w')
 
 class Sudoku(tk.Canvas):
     def __init__(self):
         super().__init__(
             width=9*num_size, height=11*num_size, background="white", highlightthickness=0
         )
-        # file = import_file()
-        # print(file)
-        print("file is: ",file, type(file))
-        self.grid = csv_to_list(file) #dictionary with current values
+
+        self.grid = [[0 for i in range(9)] for i in range(9)]
         self.create_grid()
         self.create_game()
-        self.initial_grid = csv_to_list(file)
         
         self.position = (0,0)
 
@@ -74,40 +60,35 @@ class Sudoku(tk.Canvas):
             for j in range(9):
                 if grid[i][j] != 0:
                     self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(grid[i][j]))
-        for i in range(9):
-            self.create_text((i+0.5)*num_size,(10+0.5)*num_size,text=str(i+1))
+        
 
        
-        image = Image.open("assets/hint.png")
-        image = image.resize((45, 40), Image.ANTIALIAS)
-        self.reset_img = ImageTk.PhotoImage(image)
-        self.button = tk.Button(image=self.reset_img, command=self.give_hint)
-        self.button.place(x=1.15*num_size,y=9.2*num_size)
+        
+        self.button = tk.Button(text='save', command=self.file_save,height=1)
+        self.button.place(x=7.15*num_size,y=9.5*num_size)
      
+
+
+    def file_save(self):
     
-    def give_hint(self,numb=0):
-        if numb!=0:
-            self.hint_state = (self.hint_state[0], numb)
-        else:
-            self.hint_state = (not self.hint_state[0], numb)
+        f = save_as(mode='w', defaultextension=".txt")
+        if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
+            return
+        
+        for j in range(9):
+            for i in range(9):
+                if i<8:
+                    f.write(str(self.grid[i][j])+'\t')
+                else:
+                    f.write(str(self.grid[i][j]))
+            if j<8:
+                f.write('\n')
 
-        if self.hint_state[0]:
-            print("give gint for number {}".format(numb))
-            for square in range(9):
-                for i,j,candidate in possible_numbers_square(square,self.grid):
-                    if numb==candidate:
-                        print(i,j)
-                        self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(numb),tag='hint',fill='red')
-                        self.grid[i][j] = numb
-
-
-
+        f.close()
+        root.destroy()
             
 
             
-                
-    
-
     def click(self,event):
 
         click_coordenates = (event.x//num_size, event.y//num_size)
@@ -119,18 +100,7 @@ class Sudoku(tk.Canvas):
             x,y = X*num_size, Y*num_size
 
             self.create_rectangle(x+5,y+5,x+num_size-5,y+num_size-5,outline='red',tag='click_rectangle')
-        elif click_coordenates[1]==10:
-            self.delete('mark_numbers')
-            i = click_coordenates[0]
-            numb_clicked = i + 1
-            self.give_hint(numb_clicked)
-            x,y = i*num_size, 10*num_size
-            self.create_rectangle(x+5,y+5,x+num_size-5,y+num_size-5,outline='blue',tag='mark_numbers')
-            for i in range(9):
-                for j in range(9):
-                    if self.grid[i][j] == numb_clicked:
-                        x,y = i*num_size, j*num_size
-                        self.create_rectangle(x+5,y+5,x+num_size-5,y+num_size-5,outline='blue',tag='mark_numbers')
+        
             
 
                 
@@ -179,48 +149,9 @@ class Sudoku(tk.Canvas):
         self.grid[X][Y] = 0
         
 
-    def delete_all(self):
-        for j in range(9):
-            for i in range(9):
-                if self.initial_grid[i][j]==0:
-                    self.delete('{}_{}'.format(i,j))
-                    self.grid[i][j] = 0
-
-
-    def new_trial(self):
-        i,j = self.current_trial[:]
-        while self.grid[i][j] != 0:
-            i += 1
-            if i>=9:
-                i = 0
-                j += 1
-        
-        self.current_trial = (i,j)
-
-        new_numb = new_number(i,j,self.grid)
-        self.grid[i][j] = new_numb
-        # print(self.grid[i][j])
-        self.create_text((i+0.5)*num_size,(j+0.5)*num_size,text=str(self.grid[i][j]), fill='red', tag='{}_{}'.format(i,j))
 
 
         
-    def backtracking(self):
-        
-        I,J = self.current_trial
-        self.new_trial()
-        
-        if self.grid[I][J] == -1:
-            for i in range(9):
-                for j in range(9):
-                    f.write(str(self.grid[i][j])+" ")
-            f.write("\n")
-            self.delete_all()
-            self.current_trial = (0,0)
-        
-        # if sum([sum(self.grid[i]) for i in range(9)])<405:
-        self.after(GAME_SPEED, self.backtracking)
-        
-            
 root = tk.Tk()
 root.title("Sudoku")
 root.resizable(False, False)
